@@ -1,0 +1,21 @@
+RewriteEngine On
+
+# Redirect /404 to the 404 handler
+RewriteRule ^404$ index.php?url=404 [L]
+
+# 1. First, handle static files (CSS, JS, images) - skip processing
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 2. Redirect /en/xxx to /xxx (only for default language)
+RewriteCond %{REQUEST_URI} ^/en/(.*)$ [NC]
+RewriteRule ^en/(.*)$ /$1 [L,R=301]
+
+# 3. Handle language-prefixed URLs (non-default languages)
+RewriteRule ^(ar|ur)/(.*)$ index.php?lang=$1&url=$2 [L,QSA]
+
+# 4. Handle clean URLs (default language - English)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?lang=en&url=$1 [L,QSA]
